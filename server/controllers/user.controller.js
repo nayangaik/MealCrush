@@ -149,8 +149,8 @@ export async function loginController(request,response){
             error : false,
             success : true,
             data : {
-                accesstoken,
-                refreshToken
+                accesstoken: accesstoken, // ensure lowercase key
+                refreshToken: refreshToken
             }
         })
 
@@ -167,7 +167,7 @@ export async function loginController(request,response){
 
 export async function logoutController(req,res){
     try {
-        const userid = req.userId //middleware
+        const userid = req.user.id //middleware
 
         const cookiesOption = {
             httpOnly : true,
@@ -245,7 +245,7 @@ export async function uploadAvatar(req, res) {
 
 export async function updateUserDetails(req,res){
     try {
-        const userId = req.userId //auth middleware
+        const userId = req.user.id //auth middleware
         const { name, email, mobile, password } = req.body 
 
         let hashPassword = ""
@@ -488,6 +488,30 @@ export async function refreshToken(request,response){
     } catch (error) {
         return response.status(500).json({
             message : error.message || error,
+            error : true,
+            success : false
+        })
+    }
+}
+
+export async function userDetails(request,response){
+    try {
+        const userId  = request.user.id
+
+        const user = await UserModel.findById(userId).select('-password -refresh_token')
+
+        console.log('User found:', user)
+
+        return response.json({
+            message : 'user details',
+            data : user,
+            error : false,
+            success : true
+        })
+    } catch (error) {
+        console.log('Error in userDetails:', error)
+        return response.status(500).json({
+            message : "Something is wrong",
             error : true,
             success : false
         })

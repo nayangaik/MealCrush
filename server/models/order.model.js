@@ -1,51 +1,89 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose'
 
 const orderSchema = new mongoose.Schema({
-    userId : {
-        type : mongoose.Schema.ObjectId,
-        ref : 'User'
+    orderId: {
+        type: String,
+        required: true,
+        unique: true
     },
-    orderId : {
-        type : String,
-        required : [true, "Provide orderId"],
-        unique : true
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
     },
-    productId : {
-        type : mongoose.Schema.ObjectId,
-        ref : "product"
+    items: [{
+        productId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'product',
+            required: true
+        },
+        quantity: {
+            type: Number,
+            required: true,
+            min: 1
+        },
+        price: {
+            type: Number,
+            required: true
+        }
+    }],
+    address: {
+        address_line: {
+            type: String,
+            required: true
+        },
+        city: {
+            type: String,
+            required: true
+        },
+        state: {
+            type: String,
+            required: true
+        },
+        country: {
+            type: String,
+            required: true
+        },
+        pincode: {
+            type: String,
+            required: true
+        },
+        mobile: {
+            type: String,
+            required: true
+        }
     },
-    product_details : {
-        name : String,
-        image : Array,
+    subTotal: {
+        type: Number,
+        required: true
     },
-    paymentId : {
-        type : String,
-        default : ""
+    totalAmount: {
+        type: Number,
+        required: true
     },
-    payment_status : {
-        type : String,
-        default : ""
+    paymentMethod: {
+        type: String,
+        enum: ['COD', 'ONLINE'],
+        required: true
     },
-    delivery_address : {
-        type : mongoose.Schema.ObjectId,
-        ref : 'address'
+    paymentStatus: {
+        type: String,
+        enum: ['pending', 'completed', 'failed', 'refunded'],
+        default: 'pending'
     },
-    subTotalAmt : {
-        type : Number,
-        default : 0
+    orderStatus: {
+        type: String,
+        enum: ['placed', 'confirmed', 'shipped', 'delivered', 'cancelled'],
+        default: 'placed'
     },
-    totalAmt : {
-        type : Number,
-        default : 0
-    },
-    invoice_receipt : {
-        type : String,
-        default : ""
+    trackingId: {
+        type: String,
+        default: null
     }
-},{
-    timestamps : true
+}, {
+    timestamps: true
 })
 
-const OrderModel = mongoose.model('order',orderSchema)
+const OrderModel = mongoose.model('Order', orderSchema)
 
 export default OrderModel
